@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Language Pack
+Bundle-SymbolicName: org.archicontribs.modelrepository.en
+Bundle-Version: 0.0.0.qualifier
+Fragment-Host: org.archicontribs.modelrepository
+Bundle-ClassPath: org.archicontribs.modelrepository.en.jar
