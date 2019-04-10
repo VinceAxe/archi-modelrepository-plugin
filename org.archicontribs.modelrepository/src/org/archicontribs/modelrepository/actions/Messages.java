@@ -157,6 +157,10 @@ public class Messages extends NLS {
     public static String RestoreCommitAction_3;
 
     public static String RestoreCommitAction_4;
+    
+    public static String CherryPickAction_0;
+
+    public static String CherryPickAction_1;
 
     public static String ShowInBranchesViewAction_0;
 

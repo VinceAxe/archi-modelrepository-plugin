@@ -6,6 +6,7 @@
 package org.archicontribs.modelrepository.views.history;
 
 import org.archicontribs.modelrepository.ModelRepositoryPlugin;
+import org.archicontribs.modelrepository.actions.CherryPickAction;
 import org.archicontribs.modelrepository.actions.ExtractModelFromCommitAction;
 import org.archicontribs.modelrepository.actions.ResetToRemoteCommitAction;
 import org.archicontribs.modelrepository.actions.RestoreCommitAction;
@@ -72,6 +73,7 @@ implements IContextProvider, ISelectionListener, IRepositoryListener {
     private RestoreCommitAction fActionRestoreCommit;
     private UndoLastCommitAction fActionUndoLastCommit;
     private ResetToRemoteCommitAction fActionResetToRemoteCommit;
+    private CherryPickAction fActionCherryPickCommit;
     
     
     /*
@@ -194,6 +196,9 @@ implements IContextProvider, ISelectionListener, IRepositoryListener {
         fActionResetToRemoteCommit = new ResetToRemoteCommitAction(getViewSite().getWorkbenchWindow());
         fActionResetToRemoteCommit.setEnabled(false);
         
+        fActionCherryPickCommit = new CherryPickAction(getViewSite().getWorkbenchWindow());
+        fActionCherryPickCommit.setEnabled(false);
+        
         // Register the Keybinding for actions
 //        IHandlerService service = (IHandlerService)getViewSite().getService(IHandlerService.class);
 //        service.activateHandler(fActionRefresh.getActionDefinitionId(), new ActionHandler(fActionRefresh));
@@ -264,6 +269,13 @@ implements IContextProvider, ISelectionListener, IRepositoryListener {
         // Set commit in these actions
         fActionExtractCommit.setCommit(commit);
         fActionRestoreCommit.setCommit(commit);
+        fActionCherryPickCommit.setCommit(commit);
+        
+        BranchInfo selectedBranch = (BranchInfo)getBranchesViewer().getStructuredSelection().getFirstElement();
+        // Set current branch in these actions
+        fActionCherryPickCommit.setSelectedBranch(selectedBranch);
+        // TODO:find the best way to get the current branch
+        //fActionCherryPickCommit.setCurrentBranch();
         
         // Also set the commit in the Comment Viewer
         fCommentViewer.setCommit(commit);
@@ -273,12 +285,14 @@ implements IContextProvider, ISelectionListener, IRepositoryListener {
         fActionResetToRemoteCommit.update();
         
         // Disable actions if our selected branch is not actually the current branch
-        BranchInfo selectedBranch = (BranchInfo)getBranchesViewer().getStructuredSelection().getFirstElement();
         boolean isCurrentBranch = selectedBranch != null && selectedBranch.isCurrentBranch();
         
         fActionRestoreCommit.setEnabled(isCurrentBranch && fActionRestoreCommit.isEnabled());
         fActionUndoLastCommit.setEnabled(isCurrentBranch && fActionUndoLastCommit.isEnabled());
         fActionResetToRemoteCommit.setEnabled(isCurrentBranch && fActionResetToRemoteCommit.isEnabled());
+        // Special here : it is not possible to cherry pick on the current branch
+        fActionCherryPickCommit.setEnabled(!isCurrentBranch);
+        
     }
     
     private void fillContextMenu(IMenuManager manager) {
@@ -289,6 +303,8 @@ implements IContextProvider, ISelectionListener, IRepositoryListener {
         manager.add(new Separator());
         manager.add(fActionUndoLastCommit);
         manager.add(fActionResetToRemoteCommit);
+        manager.add(new Separator());
+        manager.add(fActionCherryPickCommit);
     }
 
     HistoryTableViewer getHistoryViewer() {
@@ -348,6 +364,7 @@ implements IContextProvider, ISelectionListener, IRepositoryListener {
             fActionRestoreCommit.setRepository(selectedRepository);
             fActionUndoLastCommit.setRepository(selectedRepository);
             fActionResetToRemoteCommit.setRepository(selectedRepository);
+            //fActionCherryPickCommit.setRepository(selectedRepository);
         }
     }
     
