@@ -5,6 +5,8 @@
  */
 package org.archicontribs.modelrepository.views.history;
 
+import java.util.Iterator;
+
 import org.archicontribs.modelrepository.ModelRepositoryPlugin;
 import org.archicontribs.modelrepository.actions.CherryPickAction;
 import org.archicontribs.modelrepository.actions.ExtractModelFromCommitAction;
@@ -46,6 +48,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.archimatetool.editor.ui.components.UpdatingTableColumnLayout;
 import com.archimatetool.model.IArchimateModel;
+import com.archimatetool.model.IStructureElement;
 
 
 /**
@@ -275,6 +278,13 @@ implements IContextProvider, ISelectionListener, IRepositoryListener {
         // Set current branch in these actions
         fActionCherryPickCommit.setSelectedBranch(selectedBranch);
         // TODO:find the best way to get the current branch
+        Iterator<BranchInfo> it = getBranchesViewer().getStructuredSelection().iterator();
+		while(it.hasNext()) {
+			BranchInfo bi = it.next();
+			if(bi.isCurrentBranch()) 
+				fActionCherryPickCommit.setCurrentBranch(bi);
+		}
+		
         //fActionCherryPickCommit.setCurrentBranch();
         
         // Also set the commit in the Comment Viewer
