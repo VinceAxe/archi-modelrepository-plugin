@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.archicontribs.modelrepository.authentication.UsernamePassword;
+import org.eclipse.jgit.api.CherryPickResult;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -150,6 +151,15 @@ public interface IArchiRepository extends IGraficoConstants {
      */
     void resetToRef(String ref) throws IOException, GitAPIException;
 
+    /**
+     * Do a Cherry Pick from the given ref to the current Br
+     * @param commit the commit to cherry-pick
+     * @throws IOException
+     * @throws GitAPIException
+     * @return the result of the cherry-pick action
+     */
+    CherryPickResult cherryPickCommit(RevCommit commit) throws IOException, GitAPIException;
+    
     /**
      * @return true if there are unpushed commits in branch
      * @param branch The branch name

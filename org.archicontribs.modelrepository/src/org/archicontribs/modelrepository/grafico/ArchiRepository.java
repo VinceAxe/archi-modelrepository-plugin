@@ -21,6 +21,8 @@ import java.util.stream.Stream;
 import org.archicontribs.modelrepository.authentication.CredentialsAuthenticator;
 import org.archicontribs.modelrepository.authentication.UsernamePassword;
 import org.eclipse.jgit.api.AddCommand;
+import org.eclipse.jgit.api.CherryPickCommand;
+import org.eclipse.jgit.api.CherryPickResult;
 import org.eclipse.jgit.api.CleanCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
@@ -175,6 +177,22 @@ public class ArchiRepository implements IArchiRepository {
             return commitCommand.call();
         }
     }
+    
+    @Override
+    public CherryPickResult cherryPickCommit(RevCommit commit) throws IOException, GitAPIException {
+    	try(Git git = Git.open(getLocalRepositoryFolder())) {
+    		CherryPickCommand cherryPickCommand = git.cherryPick();
+    		
+    		cherryPickCommand.include(commit);
+    		
+    		// TEMP TODO:remove only used for testing
+    		cherryPickCommand.setNoCommit(true);
+    		
+    		return cherryPickCommand.call();
+    	}
+    	
+    }
+    
     
     @Override
     public void cloneModel(String repoURL, UsernamePassword npw, ProgressMonitor monitor) throws GitAPIException, IOException {

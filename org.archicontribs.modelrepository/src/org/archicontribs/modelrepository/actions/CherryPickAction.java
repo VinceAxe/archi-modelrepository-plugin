@@ -17,6 +17,7 @@ import org.archicontribs.modelrepository.grafico.IArchiRepository;
 import org.archicontribs.modelrepository.grafico.IGraficoConstants;
 import org.archicontribs.modelrepository.grafico.IRepositoryListener;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jgit.api.CherryPickResult;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -74,7 +75,7 @@ public class CherryPickAction extends AbstractModelAction {
     
     @Override
     public void run() {
-    	/*
+    	// *
         // Offer to save the model if open and dirty
         IArchimateModel model = getRepository().locateModel();
         if(model != null && IEditorModelManager.INSTANCE.isModelDirty(model)) {
@@ -86,11 +87,23 @@ public class CherryPickAction extends AbstractModelAction {
         boolean response = MessageDialog.openConfirm(fWindow.getShell(),
                 Messages.CherryPickAction_0,
                 Messages.CherryPickAction_1);
-
+		// Have to abort if no, impossible to cherry-pick a dirty workspace
         if(!response) {
             return;
         }
-                
+        try {
+        	// jlib git examination to know how to get git cherry-pick
+        	CherryPickResult result = getRepository().cherryPickCommit(fCommit);
+        	
+        	MessageDialog.openInformation(fWindow.getShell(),
+        			Messages.CherryPickAction_0, 
+        			result.getStatus().toString());
+        }
+        catch(IOException | GitAPIException ex) {
+            displayErrorDialog(Messages.CherryPickAction_0, ex);
+            return;
+        }
+		/*
         // Walk the tree and get the contents of the commit
         try(Repository repository = Git.open(getRepository().getLocalRepositoryFolder()).getRepository()) {
             repository.writeCherryPickHead(head);
