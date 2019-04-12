@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javax.swing.ProgressMonitor;
+
 import org.archicontribs.modelrepository.IModelRepositoryImages;
 import org.archicontribs.modelrepository.grafico.BranchInfo;
 import org.archicontribs.modelrepository.grafico.BranchStatus;
@@ -16,9 +18,13 @@ import org.archicontribs.modelrepository.grafico.GraficoModelLoader;
 import org.archicontribs.modelrepository.grafico.IArchiRepository;
 import org.archicontribs.modelrepository.grafico.IGraficoConstants;
 import org.archicontribs.modelrepository.grafico.IRepositoryListener;
+import org.archicontribs.modelrepository.merge.MergeConflictHandler;
+import org.eclipse.emf.common.archive.Handler;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jgit.api.CherryPickResult;
+import org.eclipse.jgit.api.CherryPickResult.CherryPickStatus;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -37,9 +43,17 @@ import com.archimatetool.model.IArchimateModel;
  * Cherry Pick a particular commit into the branch
  */
 public class CherryPickAction extends AbstractModelAction {
+	/*
+    protected static final int CHERRY_STATUS_ERROR = -1;
+    protected static final int CHERRY_STATUS_OK = 0;
+    protected static final int CHERRY_STATUS_UP_TO_DATE = 1;
+    // */
+    protected static final int CHERRY_STATUS_MERGE_CANCEL = 2;
+    // */
+    private int fCherryPickStatus;
     
     private RevCommit fCommit;
-    private BranchInfo fCurrentBranch, fSelectedBranch;
+    private BranchInfo fCurrentBranch; //, fSelectedBranch;
 	
     public CherryPickAction(IWorkbenchWindow window) {
         super(window);
@@ -56,9 +70,9 @@ public class CherryPickAction extends AbstractModelAction {
     	updateText();
     }
 
-    public void setSelectedBranch(BranchInfo selectedBranch) {
-    	fSelectedBranch = selectedBranch;
-    }
+    //public void setSelectedBranch(BranchInfo selectedBranch) {
+    	//fSelectedBranch = selectedBranch;
+    //}
     
     public void setCommit(RevCommit commit) {
         fCommit = commit;
@@ -85,22 +99,39 @@ public class CherryPickAction extends AbstractModelAction {
         }
         
         boolean response = MessageDialog.openConfirm(fWindow.getShell(),
-                Messages.CherryPickAction_0,
+        		NLS.bind(Messages.CherryPickAction_0, fCurrentBranch.getShortName()),
                 Messages.CherryPickAction_1);
 		// Have to abort if no, impossible to cherry-pick a dirty workspace
         if(!response) {
             return;
         }
         try {
-        	// jlib git examination to know how to get git cherry-pick
         	CherryPickResult result = getRepository().cherryPickCommit(fCommit);
         	
+        	if(result.getStatus() == CherryPickStatus.CONFLICTING) {
+        		MergeConflictHandler conflictHandler = new MergeConflictHandler(result.get, fCommit, getRepository(), fWindow.getShell());
+        		try {
+        			conflictHandler.init();
+        			
+        		}
+                catch(IOException | GitAPIException ex) {
+                    handler.resetToLocalState(); // Clean up
+
+                    if(ex instanceof CanceledException) {
+                        fCherryPickStatus = CHERRY_STATUS_MERGE_CANCEL;
+                        return;
+                    }
+
+                    throw ex;
+                }
+        	}
+        	
         	MessageDialog.openInformation(fWindow.getShell(),
-        			Messages.CherryPickAction_0, 
+        			NLS.bind(Messages.CherryPickAction_0, fCurrentBranch.getShortName()), 
         			result.getStatus().toString());
         }
         catch(IOException | GitAPIException ex) {
-            displayErrorDialog(Messages.CherryPickAction_0, ex);
+            displayErrorDialog(NLS.bind(Messages.CherryPickAction_0, fCurrentBranch.getShortName()), ex);
             return;
         }
 		/*

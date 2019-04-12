@@ -276,7 +276,7 @@ implements IContextProvider, ISelectionListener, IRepositoryListener {
         
         BranchInfo selectedBranch = (BranchInfo)getBranchesViewer().getStructuredSelection().getFirstElement();
         // Set current branch in these actions
-        fActionCherryPickCommit.setSelectedBranch(selectedBranch);
+        //fActionCherryPickCommit.setSelectedBranch(selectedBranch);
         // TODO:find the best way to get the current branch
         Iterator<BranchInfo> it = getBranchesViewer().getStructuredSelection().iterator();
 		while(it.hasNext()) {
@@ -374,7 +374,7 @@ implements IContextProvider, ISelectionListener, IRepositoryListener {
             fActionRestoreCommit.setRepository(selectedRepository);
             fActionUndoLastCommit.setRepository(selectedRepository);
             fActionResetToRemoteCommit.setRepository(selectedRepository);
-            //fActionCherryPickCommit.setRepository(selectedRepository);
+            fActionCherryPickCommit.setRepository(selectedRepository);
         }
     }
     

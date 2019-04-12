@@ -186,7 +186,7 @@ public class ArchiRepository implements IArchiRepository {
     		cherryPickCommand.include(commit);
     		
     		// TEMP TODO:remove only used for testing
-    		cherryPickCommand.setNoCommit(true);
+    		//cherryPickCommand.setNoCommit(true);
     		
     		return cherryPickCommand.call();
     	}
