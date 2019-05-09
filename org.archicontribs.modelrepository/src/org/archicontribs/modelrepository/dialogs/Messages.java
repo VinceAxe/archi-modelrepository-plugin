@@ -15,6 +15,8 @@ public class Messages extends NLS {
     public static String AddBranchDialog_3;
 
     public static String AddBranchDialog_6;
+    
+    public static String ShowDiffDialog_0;
 
     public static String CloneInputDialog_0;
 
