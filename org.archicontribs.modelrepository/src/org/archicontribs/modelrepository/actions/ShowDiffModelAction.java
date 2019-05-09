@@ -6,14 +6,17 @@
 package org.archicontribs.modelrepository.actions;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.archicontribs.modelrepository.IModelRepositoryImages;
+import org.archicontribs.modelrepository.dialogs.ShowDiffDialog;
 import org.archicontribs.modelrepository.grafico.ArchiRepository;
 import org.archicontribs.modelrepository.grafico.GraficoUtils;
 import org.archicontribs.modelrepository.grafico.IArchiRepository;
 import org.archicontribs.modelrepository.grafico.IRepositoryListener;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import com.archimatetool.editor.model.IEditorModelManager;
@@ -64,11 +67,22 @@ public class ShowDiffModelAction extends AbstractModelAction {
                 		, "No changes, nothing to diff");
 				return;
 			}
+
+	        // Call the Diff
+	        List<DiffEntry> diffResults = repo.getDiff();
+	        if(diffResults == null || diffResults.size() == 0)
+	        {
+				displayErrorDialog(Messages.ShowDiffAction_0
+						, new Exception("No changes to show, but has not been detected before"));
+	        }
+	        
+	        // Transmit the Diff Entries to the showing Dialog
+	        ShowDiffDialog showDiff = new ShowDiffDialog(fWindow.getShell(), diffResults);
+	        int returnDialog = showDiff.open();
+	        
 		} catch (IOException | GitAPIException ex ) {
 			displayErrorDialog(Messages.ShowDiffAction_0, ex);
 		}
         
-        // Call the Diff
-        repo.getDiff();
     }
 }
