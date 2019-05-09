@@ -68,6 +68,12 @@
             id="org.archicontribs.modelrepository.command.deleteModel"
             name="%command.name.11">
       </command>
+      <command
+            defaultHandler="org.archicontribs.modelrepository.actions.ShowDiffModelHandler"
+            id="org.archicontribs.modelrepository.command.showDiff"
+            name="Show Diff">
+            <!-- TODO: name="%command.name.12" does not work -->
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -100,6 +106,10 @@
                   icon="img/pull.png"
                   style="push">
             </command>
+            <command
+            	commandId="org.archicontribs.modelrepository.command.showDiff"
+            	style="push">
+        	</command>
             <command
                   commandId="org.archicontribs.modelrepository.command.abortChanges"
                   icon="img/abort.png"
@@ -171,6 +181,10 @@
                   style="push">
             </command>
             <command
+            	commandId="org.archicontribs.modelrepository.command.showDiff"
+            	style="push">
+        	</command>
+            <command
                   commandId="org.archicontribs.modelrepository.command.abortChanges"
                   icon="img/abort.png"
                   style="push">
@@ -226,6 +240,10 @@
                   icon="img/pull.png"
                   style="push">
             </command>
+            <command
+            	commandId="org.archicontribs.modelrepository.command.showDiff"
+            	style="push">
+        	</command>
             <command
                   commandId="org.archicontribs.modelrepository.command.abortChanges"
                   icon="img/abort.png"
