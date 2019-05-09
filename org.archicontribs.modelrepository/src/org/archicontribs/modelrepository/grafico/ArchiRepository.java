@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.archicontribs.modelrepository.authentication.CredentialsAuthenticator;
@@ -24,6 +25,7 @@ import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CleanCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
+import org.eclipse.jgit.api.DiffCommand;
 import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.InitCommand;
@@ -35,6 +37,7 @@ import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.ConfigInvalidException;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.ConfigConstants;
@@ -553,5 +556,14 @@ public class ArchiRepository implements IArchiRepository {
         }
         
         return sb.toString();
+    }
+
+    @Override
+	public List<DiffEntry> getDiff() throws IOException, GitAPIException
+    {
+    	try(Git git = Git.open(getLocalRepositoryFolder())) {
+    		DiffCommand result = git.diff();
+    		return result.call();
+    	}
     }
 }

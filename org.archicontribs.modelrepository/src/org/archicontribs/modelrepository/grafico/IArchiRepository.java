@@ -3,11 +3,13 @@ package org.archicontribs.modelrepository.grafico;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.archicontribs.modelrepository.authentication.UsernamePassword;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -205,4 +207,10 @@ public interface IArchiRepository extends IGraficoConstants {
      * @throws GitAPIException
      */
     BranchStatus getBranchStatus() throws IOException, GitAPIException;
+    
+    /**
+     * @return The DiffEntry of all changes in the repos
+     */
+     List<DiffEntry> getDiff() throws IOException, GitAPIException;
+    
 }
